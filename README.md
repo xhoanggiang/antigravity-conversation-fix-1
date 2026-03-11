@@ -1,91 +1,79 @@
 # Antigravity Conversation Fix
 
-Fixes missing and unordered conversation history in **Antigravity** (the Google DeepMind AI coding assistant).
+Your Antigravity conversation history disappeared? Conversations showing in the wrong order? Titles replaced with placeholder text? This tool fixes all of that.
 
-## The Problem
+## ⚡ Quick Start (Windows)
 
-Antigravity sometimes loses your conversation sidebar — conversations disappear, show in wrong order, or display placeholder titles instead of real names. This happens because the internal conversation index (`state.vscdb`) gets corrupted or out of sync with the actual conversation files on disk.
+1. Download **`Antigravity_Conversation_Fix.exe`** from the Releases Page
+2. Double-click it — a terminal window will open
+3. If Antigravity is still running, the tool will warn you and ask you to close it first
+4. The tool scans your conversations, rebuilds the index, and shows you the results
+5. Restart your PC, then open Antigravity — your conversations are back, sorted by date
 
-## What This Tool Does
+> **No Python or developer tools required.** Just download, run, done.
 
-- **Restores all conversations** from disk back into the sidebar
-- **Sorts by date** (newest first) so your most recent chats appear on top
-- **Preserves real titles** — extracts names from brain artifacts and keeps existing titles from the database
-- **Backs up** your current index before making changes (saved as `trajectorySummaries_backup.txt`)
+## What It Fixes
 
-## Requirements
-
-- **Python 3.7+** (no external packages needed — uses only Python standard library)
-- **Windows** (paths are Windows-specific)
-
-## Usage
-
-### Option 1: Double-click (easiest)
-
-1. **Close Antigravity completely** (File → Exit, or kill `antigravity.exe` from Task Manager)
-2. Double-click **`run.bat`**
-3. **Reboot your PC** (full restart, not just app restart)
-4. Open Antigravity — your conversations should appear, sorted by date
-
-### Option 2: Command line
-
-```
-python rebuild_conversations.py
-```
+| Problem | Fixed? |
+|---|---|
+| Conversations missing from sidebar | ✅ |
+| Conversations in wrong order | ✅ Sorted newest first |
+| Placeholder titles instead of real names | ✅ Restores from brain artifacts |
+| Titles lost after previous fix attempts | ✅ Preserves existing titles |
 
 ## How It Works
 
 Antigravity stores conversation data in two places:
 
-| Location | Contains |
-|---|---|
-| `%USERPROFILE%\.gemini\antigravity\conversations\*.pb` | Encrypted conversation data (messages, code, etc.) |
-| `%APPDATA%\antigravity\User\globalStorage\state.vscdb` | SQLite database with the sidebar index (which conversations to show, their titles, order) |
+- **Conversation files** (`*.pb`) in `%USERPROFILE%\.gemini\antigravity\conversations\`
+- **Sidebar index** in a SQLite database at `%APPDATA%\antigravity\User\globalStorage\state.vscdb`
 
-When the index gets corrupted, conversations exist on disk but don't appear in the sidebar. This tool scans the conversation files, rebuilds the index sorted by modification date, and writes it back to the database.
+When the index gets corrupted, conversations still exist on disk but don't show up in the sidebar. This tool scans your conversation files, sorts them by date, pulls titles from brain artifacts, and writes a clean index back to the database.
 
 **Title resolution priority:**
-1. Brain artifact `.md` headings (from `%USERPROFILE%\.gemini\antigravity\brain\`)
-2. Existing titles already in the database (preserved across re-runs)
-3. Fallback: `Conversation (date) short-uuid`
+1. Brain artifact `.md` headings (best source)
+2. Titles already in the database (preserved across re-runs)
+3. Fallback: `Conversation (date) short-id`
 
 ## Output Legend
-
-When the tool runs, each conversation is marked with its title source:
 
 | Marker | Meaning |
 |---|---|
 | `[+]` | Title extracted from brain artifact |
 | `[~]` | Title preserved from existing database |
-| `[?]` | Fallback title (no other source available) |
+| `[?]` | Fallback title (no source available) |
+
+## Advanced: Run from Source
+
+If you prefer running the Python script directly (or you're on Mac/Linux):
+
+```bash
+python rebuild_conversations.py
+```
+
+Requires Python 3.7+ with no external packages.
+
+## Safety
+
+- **Automatic backup** — your current index is saved to `trajectorySummaries_backup.txt` before any changes
+- **Non-destructive** — conversation files (`*.pb`) are never modified, only the sidebar index is rebuilt
+- **Idempotent** — safe to run multiple times
 
 ## FAQ
 
-**Q: Why do some conversations show as "Conversation (Mar 10) abc12345"?**
-A: These conversations don't have brain artifacts (`.md` files) and weren't in the database with a real title. The app generates titles internally — if the index was already corrupted before running this tool, those titles are lost. Future re-runs will preserve any titles the app generates.
+**Q: Do I really need to restart my PC?**
+A: A full restart is the safest way to ensure Antigravity picks up the changes. In most cases, simply closing and reopening Antigravity works too.
 
-**Q: Do I really need to reboot?**
-A: Yes. Antigravity caches the index in memory and writes it back on shutdown. A simple app restart isn't enough — the OS-level file locks need to fully release.
+**Q: Why do some titles show as "Conversation (Mar 10) abc12345"?**
+A: Those conversations don't have brain artifacts, and their original titles weren't in the database. Future re-runs will preserve any titles the app generates going forward.
 
-**Q: Is this safe?**
-A: Yes. The tool backs up your current index before making changes. Your actual conversation data (the `.pb` files) is never modified — only the sidebar index is rebuilt.
-
-**Q: Can I run this multiple times?**
-A: Absolutely. Each run preserves existing titles and re-sorts by date. It's safe to re-run whenever your sidebar gets out of sync.
-
-## File Structure
-
-```
-Antigravity Conversation Fix/
-├── rebuild_conversations.py    # Main script
-├── run.bat                     # Windows launcher
-└── README.md                   # This file
-```
+**Q: Can I run this while Antigravity is open?**
+A: The tool will detect if Antigravity is running and warn you. It's recommended to close it first so the app doesn't overwrite your fix when it exits.
 
 ## License
 
-MIT — use it, share it, modify it.
+MIT — free to use, share, and modify.
 
 ---
 
-**⭐ If this tool helped you, please star the repo so other users can find it!**
+**⭐ If this fixed your conversations, please star the repo so others can find it!**
