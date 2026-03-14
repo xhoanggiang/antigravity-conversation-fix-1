@@ -26,8 +26,14 @@ Your Antigravity conversation history disappeared? Conversations showing in the 
 
 Antigravity stores conversation data in two places:
 
-- **Conversation files** (`*.pb`) in `%USERPROFILE%\.gemini\antigravity\conversations\`
-- **Sidebar index** in a SQLite database at `%APPDATA%\antigravity\User\globalStorage\state.vscdb`
+- **Conversation files** (`*.pb`) — stored in your user profile
+- **Sidebar index** — a SQLite database in your app data folder
+
+| OS | Conversations | Database |
+|---|---|---|
+| Windows | `%USERPROFILE%\.gemini\antigravity\conversations\` | `%APPDATA%\antigravity\...\state.vscdb` |
+| macOS | `~/.gemini/antigravity/conversations/` | `~/Library/Application Support/antigravity/.../state.vscdb` |
+| Linux | `~/.gemini/antigravity/conversations/` | `~/.config/Antigravity/.../state.vscdb` |
 
 When the index gets corrupted, conversations still exist on disk but don't show up in the sidebar. This tool scans your conversation files, sorts them by date, pulls titles from brain artifacts, and writes a clean index back to the database.
 
@@ -47,6 +53,9 @@ When the index gets corrupted, conversations still exist on disk but don't show 
 
 ## Changelog
 
+### v1.02
+- **New:** Cross-platform support — the Python script now works on **macOS** and **Linux** in addition to Windows. The `.exe` remains Windows-only.
+
 ### v1.01
 - **Fix:** Workspace assignments are now preserved when rebuilding the index. Previously, running the tool would strip conversations from their assigned workspace.
 - **Note:** If you ran v1.0 and lost workspace assignments, those must be manually re-assigned inside Antigravity. v1.01 prevents this from happening on future runs.
@@ -54,15 +63,15 @@ When the index gets corrupted, conversations still exist on disk but don't show 
 ### v1.0
 - Initial release — restores missing conversations, sorts by date, fixes titles.
 
-## Advanced: Run from Source
+## Advanced: Run from Source (Mac / Linux / Windows)
 
-If you prefer running the Python script directly (or you're on Mac/Linux):
+If you prefer running the Python script directly, or if you are on **Mac** or **Linux** (which cannot run `.exe` files):
 
 ```bash
 python rebuild_conversations.py
 ```
 
-Requires Python 3.7+ with no external packages.
+Requires Python 3.7+ with no external packages. The script automatically detects your operating system and finds the correct `antigravity` folders.
 
 ## Safety
 
