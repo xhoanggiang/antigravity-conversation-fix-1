@@ -21,6 +21,8 @@ Your Antigravity conversation history disappeared? Conversations showing in the 
 | Placeholder titles instead of real names | ✅ Restores from brain artifacts |
 | Titles lost after previous fix attempts | ✅ Preserves existing titles |
 | Workspace assignments stripped on rebuild | ✅ Preserves workspace metadata *(v1.01+)* |
+| Conversations not mapped to any workspace | ✅ Interactive workspace assignment *(v1.03+)* |
+| Conversations without dates pushed to bottom | ✅ Automatic timestamp injection *(v1.03+)* |
 
 ## How It Works
 
@@ -52,6 +54,11 @@ When the index gets corrupted, conversations still exist on disk but don't show 
 | `[WS]` | Workspace metadata preserved *(v1.01+)* |
 
 ## Changelog
+
+### v1.03
+- **New:** Interactive workspace assignment — conversations without a workspace mapping are listed, and the user can paste a folder path for each one. Supports batch assignment (`all`), skip (`Enter`), and stop (`q`). Invalid paths are rejected with retry.
+- **New:** Automatic timestamp injection — conversations missing timestamp metadata now get timestamps derived from the `.pb` file modification time, so they sort correctly in the sidebar instead of being pushed to the bottom.
+- **New:** Smarter workspace detection — uses `extract_workspace_hint()` to accurately detect existing workspace URIs in protobuf blobs, replacing the previous heuristic based on blob size.
 
 ### v1.02
 - **New:** Cross-platform support — the Python script now works on **macOS** and **Linux** in addition to Windows. The `.exe` remains Windows-only.
